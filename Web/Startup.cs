@@ -1,13 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.SpaServices;
+using System.IO;
+using VueCliMiddleware;
 
 namespace Web
 {
@@ -24,6 +22,8 @@ namespace Web
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            // NOTE: PRODUCTION Ensure this is the same path that is specified in your webpack output
+            services.AddSpaStaticFiles(opt => opt.RootPath = "client-app/src");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,13 +45,17 @@ namespace Web
             app.UseRouting();
 
             app.UseAuthorization();
+            var SourcePath = Path.Join(env.ContentRootPath, "client-app");
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapToVueCliProxy(
+                    "{*path}",
+                    new SpaOptions { SourcePath = SourcePath },
+                    npmScript: (System.Diagnostics.Debugger.IsAttached) ? "dev" : null,
+                    forceKill: true);
             });
+
         }
     }
 }
