@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
+using Microsoft.AspNetCore.Cors;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -20,6 +21,8 @@ namespace WebApi.Controllers
             _context = context;
         }
 
+        
+        // [EnableCors("ExposeResponseHeaders")]
         [HttpGet]
         [Route("GetUsers")]
         public IActionResult GetUsers()
