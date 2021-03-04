@@ -64,15 +64,15 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-btn flat round color="primary" icon="mdi-pencil" size="sm">
+            <q-btn flat round color="primary" icon="edit" size="sm">
               <q-tooltip content-style="font-size: 16px" :offset="[10, 10]">
                 Редактировать данные пользователя
               </q-tooltip>
             </q-btn>
 
-            <q-btn flat round color="primary" icon="mdi-eye-outline" size="sm">
+            <q-btn flat round color="negative" icon="delete" size="sm">
               <q-tooltip content-style="font-size: 16px" :offset="[10, 10]">
-                Просмотреть данные пользователя
+                Удалить пользователя
               </q-tooltip>
             </q-btn>
           </q-td>
@@ -113,53 +113,53 @@ import _ from "lodash";
 import { Dialog } from "quasar";
 
 const columns = [
-  { name: "id", align: "center", label: "Id", field: "id", sortable: true },
+  { name: "id", align: "center", label: "id пользователя в базе", field: "id", sortable: true },
   {
     name: "login",
     align: "center",
-    label: "login",
+    label: "Логин",
     field: "login",
     sortable: true,
   },
   {
     name: "begin_date",
     align: "center",
-    label: "begin_date",
+    label: "Дата начала доступа",
     field: "begin_date",
     sortable: true,
   },
   {
     name: "end_date",
     align: "center",
-    label: "end_date",
+    label: "Дата окончания доступа",
     field: "end_date",
     sortable: true,
   },
   {
     name: "is_blocked",
     align: "center",
-    label: "is_blocked",
+    label: "Заблокирован",
     field: "is_blocked",
     sortable: true,
   },
   {
     name: "required_password_change",
     align: "center",
-    label: "required_password_change",
+    label: "Требуется смена пароля",
     field: "required_password_change",
     sortable: true,
   },
   {
     name: "wrong_login_count",
     align: "center",
-    label: "wrong_login_count",
+    label: "Количество проваленных авторизаций",
     field: "wrong_login_count",
     sortable: true,
   },
   {
     name: "last_login_date",
     align: "center",
-    label: "last_login_date",
+    label: "Дата и время последней авторизации",
     field: "last_login_date",
     sortable: true,
   },
