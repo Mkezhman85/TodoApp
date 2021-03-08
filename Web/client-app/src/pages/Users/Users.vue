@@ -23,6 +23,7 @@
           class="q-mx-sm"
           icon-right="mdi-plus"
           no-caps
+          @click="openUserEditor"
         />
         <q-btn
           color="primary"
@@ -70,9 +71,29 @@
               </q-tooltip>
             </q-btn>
 
-            <q-btn flat round color="negative" icon="delete" size="sm">
+            <q-btn
+              flat
+              round
+              color="negative"
+              icon="delete"
+              size="sm"
+              @click="DeleteUserById(props.row.id)"
+            >
               <q-tooltip content-style="font-size: 16px" :offset="[10, 10]">
                 Удалить пользователя
+              </q-tooltip>
+            </q-btn>
+
+            <q-btn
+              flat
+              round
+              color="primary"
+              icon="visibility"
+              size="sm"
+              @click="viewUserDetails(props.row.id)"
+            >
+              <q-tooltip content-style="font-size: 16px" :offset="[10, 10]">
+                Просмотр данных пользователя
               </q-tooltip>
             </q-btn>
           </q-td>
@@ -103,6 +124,13 @@
         </q-tr>
       </template>
     </q-table>
+    <UserEditor
+      v-model="userEditorOpened"
+      @open-userEditorOpened="openUserEditor"
+      @hide-userEditorOpened="hideUserEditor"
+      :user="selectedUser"
+      :create-newUSer="CreateNewUser"
+    />
   </div>
 </template>
 
@@ -111,9 +139,16 @@ import axios from "axios";
 import { Component, Prop, Vue, PropSync, Emit } from "vue-property-decorator";
 import _ from "lodash";
 import { Dialog } from "quasar";
+import UserEditor from "./UserEditor.vue";
 
 const columns = [
-  { name: "id", align: "center", label: "id пользователя в базе", field: "id", sortable: true },
+  {
+    name: "id",
+    align: "center",
+    label: "id пользователя в базе",
+    field: "id",
+    sortable: true,
+  },
   {
     name: "login",
     align: "center",
@@ -165,7 +200,7 @@ const columns = [
   },
 ];
 
-@Component({ components: {} })
+@Component({ components: { UserEditor } })
 export default class Users extends Vue {
   filter = "";
   splitterModel = 15;
@@ -173,6 +208,7 @@ export default class Users extends Vue {
     rowsPerPage: 15,
   };
   users = [];
+
   columns = columns;
   getBlocked(is_blocked: boolean) {
     if (is_blocked) {
@@ -186,10 +222,50 @@ export default class Users extends Vue {
       // console.log(typeof res.data.data.subjectTableViewModelList);
       this.users = res.data;
       console.log(this.users);
-      console.log(res);
       return this.users;
     });
   }
+
+  newUser = {};
+
+  async CreateNewUser(user: object) {
+    // axios.post("https://localhost:24636/api/user/CreateUser", this.newUser);
+    axios({
+      method: "post",
+      url: "https://localhost:24636/api/user/CreateUser",
+      params: {
+        user: user,
+      },
+    });
+
+    this.GetUsers();
+  }
+
+  selectedUser: object = {};
+  viewUserDetails(id: number) {
+    this.userEditorOpened = true;
+    this.selectedUser = _.find(this.users, { id: id });
+  }
+
+  DeleteUserById(id: number) {
+    axios({
+      method: "delete",
+      url: "https://localhost:24636/api/user/DeleteUserById",
+      params: {
+        id: id,
+      },
+    });
+    this.GetUsers();
+  }
+
+  userEditorOpened = false;
+  openUserEditor() {
+    this.userEditorOpened = true;
+  }
+  hideUserEditor() {
+    this.userEditorOpened = false;
+  }
+
   mounted() {
     this.GetUsers();
   }
