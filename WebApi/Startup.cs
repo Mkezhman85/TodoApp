@@ -35,11 +35,17 @@ namespace WebApi
             services.AddCors(options =>
         {
             options.AddPolicy(name: MyAllowSpecificOrigins,
-                              builder =>
-                              {
-                                  builder.WithOrigins("http://localhost:8080");
-                              });
+                builder =>
+                {
+                    builder.WithOrigins("http://localhost:8080")
+                    .AllowAnyMethod() // any method
+                         .AllowAnyHeader() // any header is *allowed*
+                                           //.AllowCredentials() // credentials allowed
+                         .WithExposedHeaders("Content-Disposition"); // content-disposition is *exposed* (and allowed because of AllowAnyHeader)
+                });
         });
+
+
         }
  
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
