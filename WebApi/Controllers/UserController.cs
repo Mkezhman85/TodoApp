@@ -36,8 +36,17 @@ namespace WebApi.Controllers
         public JsonResult CreateUser([FromBody] User user)
         {
 
-            _context.Add(user);
+            try
+            {
+                 _context.Add(user);
             _context.SaveChanges();
+            }
+            catch (System.Exception e)
+            {
+                
+                throw;
+            }
+           
 
             return new JsonResult(user);
         }
