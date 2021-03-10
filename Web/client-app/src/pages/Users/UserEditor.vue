@@ -67,6 +67,7 @@
               dense
               class="q-pa-sm"
               v-model="user.wrong_login_count"
+              type="number"
             />
             <q-input
               label="last_login_date"
@@ -85,7 +86,7 @@
       <q-card-actions class="row no-wrap">
         <q-space />
 
-        <q-btn color="positive" label="сохранить" @click="CreateNewUser" />
+        <q-btn color="positive" label="сохранить" @click="CreateNewUser(user)" />
 
         <q-btn class="q-ml-sm" flat color="red" label="сбросить изменения" />
         <q-btn
@@ -93,7 +94,6 @@
           flat
           color="red"
           label="тест"
-          @click="showNewUserConsole"
         />
       </q-card-actions>
 
@@ -110,15 +110,6 @@ import { TSelect, TInput, TCheckbox } from "src/types";
 import axios from "axios";
 import { type } from "os";
 
-export type TInput = {
-  // type: "input";
-  hint?: string;
-  prefix?: string;
-  rounded?: boolean;
-  outlined?: boolean;
-  label?: string;
-  vmodel?: string;
-};
 
 @Component
 export default class UserEditor extends Vue {
@@ -131,16 +122,27 @@ export default class UserEditor extends Vue {
   }
 
   @Prop(Object) readonly user: object;
-  @Prop(Number) readonly id: number;
+
+  // @Prop(Number) readonly id: number;
+  // @Prop(String) readonly login: string;
+  // @Prop(String) readonly begin_date: string;
+  // @Prop(String) readonly end_date: string;
+  // @Prop(Boolean) readonly is_blocked: boolean;
+  // @Prop(Boolean) readonly required_password_change: boolean;
+  // @Prop(Number) readonly wrong_login_count: number;
+  // @Prop(String) readonly last_login_date: string;
+  
 
   CreateNewUser(user: object) {
-    user = this.user;
-    this.$emit("create-newUser", user);
-  }
-
-  showNewUserConsole(user: object) {
-    user = this.user;
+    // debugger;
+    // user = this.user
+    this.$emit("create-newUser", this.user);
     console.log(user);
   }
+
+  // showNewUserConsole(user: object) {
+  //   user = this.user;
+  //   console.log(user);
+  // }
 }
 </script>

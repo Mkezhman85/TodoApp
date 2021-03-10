@@ -129,7 +129,7 @@
       @open-userEditorOpened="openUserEditor"
       @hide-userEditorOpened="hideUserEditor"
       :user="selectedUser"
-      :create-newUSer="CreateNewUser"
+      @create-newUser="CreateNewUser"
     />
   </div>
 </template>
@@ -140,6 +140,7 @@ import { Component, Prop, Vue, PropSync, Emit } from "vue-property-decorator";
 import _ from "lodash";
 import { Dialog } from "quasar";
 import UserEditor from "./UserEditor.vue";
+import { TUser } from "src/Models/Users";
 
 const columns = [
   {
@@ -207,9 +208,11 @@ export default class Users extends Vue {
   pagination = {
     rowsPerPage: 15,
   };
+
   users = [];
 
   columns = columns;
+
   getBlocked(is_blocked: boolean) {
     if (is_blocked) {
       return "Да";
@@ -217,6 +220,7 @@ export default class Users extends Vue {
       return "Нет";
     }
   }
+
   async GetUsers() {
     axios.get("https://localhost:24636/api/user/GetUsers").then((res) => {
       // console.log(typeof res.data.data.subjectTableViewModelList);
@@ -226,19 +230,22 @@ export default class Users extends Vue {
     });
   }
 
-  newUser = {};
+  newUser: TUser = {
+    login: "Ronald",
+    wrong_login_count: 6,
+  };
 
-  async CreateNewUser(user: object) {
-    // axios.post("https://localhost:24636/api/user/CreateUser", this.newUser);
-    axios({
-      method: "post",
-      url: "https://localhost:24636/api/user/CreateUser",
-      params: {
-        user: user,
-      },
+  async CreateNewUser(user: TUser) {
+    // debugger;
+    console.log(user);
+    const myUser: TUser = {
+      login: user.login,
+      wrong_login_count: Number(user.wrong_login_count),
+    };
+    axios.post("https://localhost:24636/api/user/CreateUser", myUser).then((res) => {
+      this.hideUserEditor();
+      this.GetUsers();
     });
-
-    this.GetUsers();
   }
 
   selectedUser: object = {};
@@ -254,16 +261,24 @@ export default class Users extends Vue {
       params: {
         id: id,
       },
-    });
-    this.GetUsers();
+    }).then((res) => {
+      this.GetUsers();
+    });;
   }
 
   userEditorOpened = false;
   openUserEditor() {
+    this.selectedUser = {
+      // id: 0,
+      login: "newUser",
+      wrong_login_count: 0,
+    };
     this.userEditorOpened = true;
+    console.log(this.userEditorOpened);
   }
   hideUserEditor() {
     this.userEditorOpened = false;
+    console.log(this.userEditorOpened);
   }
 
   mounted() {
