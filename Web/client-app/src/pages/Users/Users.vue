@@ -113,7 +113,7 @@
             {{ getBlocked(props.row.is_blocked) }}
           </q-td>
           <q-td key="required_password_change" :props="props">
-            {{ props.row.required_password_change }}
+            {{ requiredPasswordChange(props.row.required_password_change) }}
           </q-td>
           <q-td key="wrong_login_count" :props="props">
             {{ props.row.wrong_login_count }}
@@ -138,9 +138,12 @@
 import axios from "axios";
 import { Component, Prop, Vue, PropSync, Emit } from "vue-property-decorator";
 import _ from "lodash";
-import { Dialog } from "quasar";
+
 import UserEditor from "./UserEditor.vue";
 import { TUser } from "src/Models/Users";
+
+import { Dialog } from "quasar";
+import { Notify } from "quasar";
 
 const columns = [
   {
@@ -221,6 +224,14 @@ export default class Users extends Vue {
     }
   }
 
+  requiredPasswordChange(required_password_change: boolean) {
+    if (required_password_change) {
+      return "Да";
+    } else {
+      return "Нет";
+    }
+  }
+
   async GetUsers() {
     axios.get("https://localhost:24636/api/user/GetUsers").then((res) => {
       // console.log(typeof res.data.data.subjectTableViewModelList);
@@ -240,9 +251,18 @@ export default class Users extends Vue {
     console.log(user);
     const myUser: TUser = {
       login: user.login,
+      begin_date: user.begin_date,
+      end_date: new Date(user.end_date),
+      required_password_change: Boolean(user.required_password_change),
       wrong_login_count: Number(user.wrong_login_count),
     };
     axios.post("https://localhost:24636/api/user/CreateUser", myUser).then((res) => {
+      this.$q.notify({
+        message: "Пользователь с логином " + myUser.login + " успешно добавлен. ",
+        icon: "done",
+        position: "top-right",
+        color: "positive",
+      });
       this.hideUserEditor();
       this.GetUsers();
     });
@@ -254,16 +274,52 @@ export default class Users extends Vue {
     this.selectedUser = _.find(this.users, { id: id });
   }
 
+  // Удаление пользователя
   DeleteUserById(id: number) {
-    axios({
-      method: "delete",
-      url: "https://localhost:24636/api/user/DeleteUserById",
-      params: {
-        id: id,
-      },
-    }).then((res) => {
-      this.GetUsers();
-    });;
+    this.$q
+      .dialog({
+        title: "Подтверждение удаления",
+        message: "Вы действительно хотите удалить информацию о пользователе?",
+        cancel: true,
+        persistent: true,
+      })
+      .onOk(() => {
+        axios({
+          method: "delete",
+          url: "https://localhost:24636/api/user/DeleteUserById",
+          params: {
+            id: id,
+          },
+        }).then((res) => {
+          this.$q.notify({
+            message: "Пользователь с id " + id + " удален.",
+            icon: "done",
+            position: "top-right",
+            color: "positive",
+          });
+          this.GetUsers();
+        });
+      });
+  }
+
+  confirmDelete() {
+    this.$q
+      .dialog({
+        title: "Подтверждение удаления",
+        message: "Вы действительно хотите удалить информацию о пользователе?",
+        cancel: true,
+        persistent: true,
+      })
+      .onOk(() => {})
+      .onOk(() => {
+        // console.log('>>>> second OK catcher')
+      })
+      .onCancel(() => {
+        // console.log('>>>> Cancel')
+      })
+      .onDismiss(() => {
+        // console.log('I am triggered on both OK and Cancel')
+      });
   }
 
   userEditorOpened = false;

@@ -29,7 +29,25 @@
               dense
               class="q-pa-sm"
               v-model="user.begin_date"
-            />
+              mask="date"
+              :rules="['date']"
+            >
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    ref="qDateProxy"
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="user.begin_date">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
             <q-input
               label="end_date"
               outlined
@@ -37,7 +55,25 @@
               dense
               class="q-pa-sm"
               v-model="user.end_date"
-            />
+              mask="date"
+              :rules="['date']"
+            >
+            <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy
+                    ref="qDateProxy"
+                    transition-show="scale"
+                    transition-hide="scale"
+                  >
+                    <q-date v-model="user.end_date">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
           </div>
         </div>
         <div class="row">
@@ -89,12 +125,7 @@
         <q-btn color="positive" label="сохранить" @click="CreateNewUser(user)" />
 
         <q-btn class="q-ml-sm" flat color="red" label="сбросить изменения" />
-        <q-btn
-          class="q-ml-sm"
-          flat
-          color="red"
-          label="тест"
-        />
+        <q-btn class="q-ml-sm" flat color="red" label="тест" />
       </q-card-actions>
 
       <q-inner-loading>
@@ -109,7 +140,6 @@ import { Component, Prop, Vue, PropSync } from "vue-property-decorator";
 import { TSelect, TInput, TCheckbox } from "src/types";
 import axios from "axios";
 import { type } from "os";
-
 
 @Component
 export default class UserEditor extends Vue {
@@ -131,7 +161,6 @@ export default class UserEditor extends Vue {
   // @Prop(Boolean) readonly required_password_change: boolean;
   // @Prop(Number) readonly wrong_login_count: number;
   // @Prop(String) readonly last_login_date: string;
-  
 
   CreateNewUser(user: object) {
     // debugger;
