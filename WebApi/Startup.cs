@@ -32,12 +32,15 @@ namespace WebApi
             services.AddControllers();
             services.AddDbContext<TodoAppContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
+            services.AddTransient<IGroupRepository, GroupRepository>(provider =>
+                                                                    new GroupRepository(Configuration.GetConnectionString("DefaultConnection")));
+
             services.AddCors(options =>
         {
             options.AddPolicy(name: MyAllowSpecificOrigins,
                 builder =>
                 {
-                    builder.WithOrigins("http://localhost:8081")
+                    builder.WithOrigins("http://localhost:8080", "http://localhost:8081")
                     .AllowAnyMethod() // any method
                          .AllowAnyHeader() // any header is *allowed*
                                            //.AllowCredentials() // credentials allowed
