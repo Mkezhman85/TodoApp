@@ -32,8 +32,8 @@ namespace WebApi
             services.AddControllers();
             services.AddDbContext<TodoAppContext>(options => options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddTransient<IGroupRepository, GroupRepository>(provider =>
-                                                                    new GroupRepository(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddTransient<IDataRepository, DataRepository>(provider =>
+                                                                    new DataRepository(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddCors(options =>
         {
