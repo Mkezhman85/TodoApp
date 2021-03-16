@@ -7,8 +7,9 @@ namespace WebApi.Controllers
     [Route("api/[controller]")]
     public class GroupController : Controller
     {
-        IGroupRepository _repository;
-        public GroupController(IGroupRepository repository)
+        IDataRepository _repository;
+
+        public GroupController(IDataRepository repository)
         {
             _repository = repository;
         }
@@ -26,5 +27,16 @@ namespace WebApi.Controllers
         {
             return Ok(_repository.CreateGroup(group));
         }
+
+
+        [HttpPost]
+        [Route("CreateNewUser")]
+        public ActionResult CreateNewUser([FromBody] User user)
+        {
+            return Ok(_repository.CreateNewUser(user));
+        }
+
+
+
     }
 }

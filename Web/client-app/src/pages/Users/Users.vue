@@ -65,7 +65,14 @@
       <template v-slot:body="props">
         <q-tr :props="props">
           <q-td auto-width>
-            <q-btn flat round color="primary" icon="edit" size="sm">
+            <q-btn
+              flat
+              round
+              color="primary"
+              icon="edit"
+              size="sm"
+              @click="editUserOpen(props.row.id)"
+            >
               <q-tooltip content-style="font-size: 16px" :offset="[10, 10]">
                 Редактировать данные пользователя
               </q-tooltip>
@@ -104,10 +111,10 @@
             {{ props.row.login }}
           </q-td>
           <q-td key="begin_date" :props="props">
-            {{ props.row.begin_date }}
+            {{ FormatDate(props.row.begin_date) }}
           </q-td>
           <q-td key="end_date" :props="props">
-            {{ props.row.end_date }}
+            {{ FormatDate(props.row.end_date) }}
           </q-td>
           <q-td key="is_blocked" :props="props">
             {{ getBlocked(props.row.is_blocked) }}
@@ -119,7 +126,7 @@
             {{ props.row.wrong_login_count }}
           </q-td>
           <q-td key="last_login_date" :props="props">
-            {{ props.row.last_login_date }}
+            {{ FormatDate(props.row.last_login_date) }}
           </q-td>
         </q-tr>
       </template>
@@ -130,6 +137,7 @@
       @hide-userEditorOpened="hideUserEditor"
       :user="selectedUser"
       @create-newUser="CreateNewUser"
+      :readonlyParam="readonlyParam"
     />
   </div>
 </template>
@@ -241,21 +249,30 @@ export default class Users extends Vue {
     });
   }
 
-  newUser: TUser = {
-    login: "Ronald",
-    wrong_login_count: 6,
-  };
+  FormatDate(date: Date) {
+    return (
+      new Date(date).getDate() +
+      "." +
+      Number(new Date(date).getMonth() + 1) +
+      "." +
+      new Date(date).getFullYear()
+    );
+  }
 
   async CreateNewUser(user: TUser) {
     // debugger;
     console.log(user);
+
     const myUser: TUser = {
       login: user.login,
-      begin_date: user.begin_date,
-      end_date: new Date(user.end_date),
+      is_blocked: Boolean(user.is_blocked),
       required_password_change: Boolean(user.required_password_change),
       wrong_login_count: Number(user.wrong_login_count),
+      begin_date: new Date(user.begin_date),
+      end_date: new Date(user.end_date),
+      last_login_date: new Date(user.last_login_date),
     };
+
     axios.post("https://localhost:24636/api/user/CreateUser", myUser).then((res) => {
       this.$q.notify({
         message: "Пользователь с логином " + myUser.login + " успешно добавлен. ",
@@ -263,13 +280,21 @@ export default class Users extends Vue {
         position: "top-right",
         color: "positive",
       });
+
       this.hideUserEditor();
       this.GetUsers();
     });
   }
 
+  readonlyParam = false;
   selectedUser: object = {};
   viewUserDetails(id: number) {
+    this.userEditorOpened = true;
+    this.selectedUser = _.find(this.users, { id: id });
+    this.readonlyParam = true;
+  }
+
+  editUserOpen(id: number) {
     this.userEditorOpened = true;
     this.selectedUser = _.find(this.users, { id: id });
   }
@@ -324,16 +349,15 @@ export default class Users extends Vue {
 
   userEditorOpened = false;
   openUserEditor() {
-    this.selectedUser = {
-      // id: 0,
-      login: "newUser",
-      wrong_login_count: 0,
-    };
+    this.readonlyParam = false;
+    this.selectedUser = {}
     this.userEditorOpened = true;
     console.log(this.userEditorOpened);
   }
+
   hideUserEditor() {
     this.userEditorOpened = false;
+    this.readonlyParam = false;
     console.log(this.userEditorOpened);
   }
 
