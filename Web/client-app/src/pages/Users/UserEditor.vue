@@ -24,7 +24,7 @@
             />
             <q-checkbox
               label="Отметка блокировки"
-              v-model="user.is_blocked"
+              v-model="user.isBlocked"
               :disable="readonlyParam"
             />
           </div>
@@ -35,7 +35,7 @@
               clearable
               dense
               class="q-pa-sm"
-              v-model="user.begin_date"
+              v-model="user.beginDate"
               mask="date"
               :rules="['date']"
               :readonly="readonlyParam"
@@ -47,7 +47,7 @@
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-date v-model="user.begin_date">
+                    <q-date v-model="user.beginDate">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Закрыть" color="primary" flat />
                       </div>
@@ -62,7 +62,7 @@
               clearable
               dense
               class="q-pa-sm"
-              v-model="user.end_date"
+              v-model="user.endDate"
               mask="date"
               :rules="['date']"
               :readonly="readonlyParam"
@@ -74,7 +74,7 @@
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-date v-model="user.end_date">
+                    <q-date v-model="user.endDate">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Закрыть" color="primary" flat />
                       </div>
@@ -89,7 +89,7 @@
           <div class="col">
             <q-checkbox
               label="Требуется смена пароля"
-              v-model="user.required_password_change"
+              v-model="user.requiredPasswordChange"
               :disable="readonlyParam"
             />
           </div>
@@ -100,7 +100,7 @@
               clearable
               dense
               class="q-pa-sm"
-              v-model="user.wrong_login_count"
+              v-model="user.wrongLoginCount"
               type="number"
               :readonly="readonlyParam"
             />
@@ -110,7 +110,7 @@
               clearable
               dense
               class="q-pa-sm"
-              v-model="user.last_login_date"
+              v-model="user.lastLoginDate"
               mask="date"
               :rules="['date']"
               :readonly="readonlyParam"
@@ -122,7 +122,7 @@
                     transition-show="scale"
                     transition-hide="scale"
                   >
-                    <q-date v-model="user.last_login_date">
+                    <q-date v-model="user.lastLoginDate">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Закрыть" color="primary" flat />
                       </div>
@@ -166,14 +166,8 @@ import { type } from "os";
 
 @Component
 export default class UserEditor extends Vue {
-  @PropSync("value", { type: Boolean }) userEditorOpened!: string;
-  // @Prop(String) mode!: string;
   @Prop(Boolean) readonlyParam!: string;
-
-  // availabilityFields(mode: string) {
-  //   if
-  // }
-
+  @PropSync("value", { type: Boolean }) userEditorOpened!: string;
   openUserEditor() {
     this.$emit("open-userEditorOpened", this.userEditorOpened);
   }
@@ -207,8 +201,8 @@ export default class UserEditor extends Vue {
 
   resetUserInfo(user: object) {
     this.user.login = "";
-    this.user.begin_date = "";
-    this.user.end_date = "";
+    this.user.beginDate = "";
+    this.user.endDate = "";
   }
 
   requiredPasswordChange = [true, false];
