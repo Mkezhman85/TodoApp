@@ -29,12 +29,12 @@ namespace WebApi.Controllers
         }
 
 
-        [HttpPost]
-        [Route("CreateNewUser")]
-        public ActionResult CreateNewUser([FromBody] User user)
-        {
-            return Ok(_repository.CreateNewUser(user));
-        }
+        //[HttpPost]
+        //[Route("CreateNewUser")]
+        //public ActionResult CreateNewUser([FromBody] User user)
+        //{
+        //    return Ok(_repository.CreateNewUser(user));
+        //}
 
 
 

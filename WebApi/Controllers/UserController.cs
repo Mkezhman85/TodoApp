@@ -14,73 +14,99 @@ namespace WebApi.Controllers
     public class UserController : Controller
     {
 
-        readonly TodoAppContext _context;
 
-        public UserController(TodoAppContext context)
+        IDataRepository _repository;
+
+        public UserController(IDataRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
-        
-        // [EnableCors("ExposeResponseHeaders")]
         [HttpGet]
         [Route("GetUsers")]
-        public IActionResult GetUsers()
+        public ActionResult Index()
         {
-            var users = _context.user.ToList();
-            return Ok(users);
+            return Ok(_repository.GetUsers());
         }
 
         [HttpPost]
-        [Route("CreateUser")]
-        public JsonResult CreateUser([FromBody] User user)
+        [Route("CreateNewUser")]
+        public ActionResult CreateNewUser([FromBody] User user)
         {
-
-            try
-            {
-                 _context.Add(user);
-            _context.SaveChanges();
-            }
-            catch (System.Exception e)
-            {
-                
-                throw;
-            }
-           
-
-            return new JsonResult(user);
-        }
-
-        [HttpDelete("{id}")]
-        [Route("DeleteUserById")]
-        public async Task<IActionResult> DeleteUserById(int id)
-        {
-            var userItem = await _context.user.FindAsync(id);
-            if (userItem == null)
-            {
-                return NotFound();
-            }
-
-            _context.user.Remove(userItem);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(_repository.CreateNewUser(user));
         }
 
 
-        [HttpGet("{id}")]
-        [Route("GetUserById")]
-        public async Task<ActionResult<User>> GetUserById(int id)
-        {
-            var userItem = await _context.user.FindAsync(id);
 
-            if (userItem == null)
-            {
-                return NotFound();
-            }
 
-            return userItem;
-        }
+
+        //readonly TodoAppContext _context;
+
+        //public UserController(TodoAppContext context)
+        //{
+        //    _context = context;
+        //}
+
+
+        // [EnableCors("ExposeResponseHeaders")]
+        //[HttpGet]
+        //[Route("GetUsers")]
+        //public IActionResult GetUsers()
+        //{
+        //    var users = _context.user.ToList();
+        //    return Ok(users);
+        //}
+
+        //[HttpPost]
+        //[Route("CreateUser")]
+        //public JsonResult CreateUser([FromBody] User user)
+        //{
+
+        //    try
+        //    {
+        //         _context.Add(user);
+        //    _context.SaveChanges();
+        //    }
+        //    catch (System.Exception e)
+        //    {
+
+        //        throw;
+        //    }
+
+
+        //    return new JsonResult(user);
+        //}
+
+        //[HttpDelete("{id}")]
+        //[Route("DeleteUserById")]
+        //public async Task<IActionResult> DeleteUserById(int id)
+        //{
+        //    var userItem = await _context.user.FindAsync(id);
+        //    if (userItem == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    _context.user.Remove(userItem);
+        //    await _context.SaveChangesAsync();
+
+        //    return NoContent();
+        //}
+
+
+        //[HttpGet("{id}")]
+        //[Route("GetUserById")]
+        //public async Task<ActionResult<User>> GetUserById(int id)
+        //{
+        //    var userItem = await _context.user.FindAsync(id);
+
+        //    if (userItem == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return userItem;
+        //}
 
 
 
