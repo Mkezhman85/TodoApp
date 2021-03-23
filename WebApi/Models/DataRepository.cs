@@ -17,32 +17,24 @@ namespace WebApi.Models
             connectionString = conn;
         }
 
+        // Список пользователей
         public List<User> GetUsers()
         {
-                        
+            string sqlUserList = $@"SELECT id, login, is_blocked, required_password_change, wrong_login_count, begin_date, end_date, last_login_date FROM users";
             using (IDbConnection db = new NpgsqlConnection(connectionString))
             {
-                string sqlUserList = "SELECT " +
-                "id, " +
-                "login, " +
-                "is_blocked, " +
-                "required_password_change, " +
-                "wrong_login_count, " +
-                "begin_date, end_date, " +
-                "last_login_date " +
-                "FROM users";
                 List<User> result = db.Query<User>(sqlUserList).ToList();
                 return result;
             }
         }
 
+        // Добавление пользователя
         public User CreateNewUser(User user)
         {
             try
             {
                 long result = 0;
                 DynamicParameters parameters = new DynamicParameters();
-                var key = "id";
                 parameters.Add("login", user.Login);
                 parameters.Add("isBlocked", user.IsBlocked);
                 parameters.Add("requiredPasswordChange", user.RequiredPasswordChange);
@@ -50,17 +42,20 @@ namespace WebApi.Models
                 parameters.Add("beginDate", user.BeginDate);
                 parameters.Add("endDate", user.EndDate);
                 parameters.Add("lastLoginDate", user.LastLoginDate);
-                parameters.Add(key, result, null, ParameterDirection.InputOutput);
+                parameters.Add("id", result, null, ParameterDirection.InputOutput);
+
+                string sqlQuery = $@"INSERT INTO users
+                    (login, is_blocked, required_password_change, wrong_login_count, begin_date, end_date, last_login_date)
+                    Values
+                    (:login, :isBlocked, :requiredPasswordChange, :wrongLoginCount, :beginDate, :endDate, :lastLoginDate)
+                    returning id";
 
 
                 using (IDbConnection db = new NpgsqlConnection(connectionString))
-                {
-                    string sqlQuery = $@"INSERT INTO users (login, is_blocked, required_password_change, wrong_login_count, begin_date,
-                    end_date, last_login_date) Values(:login, :isBlocked, :requiredPasswordChange, :wrongLoginCount, :beginDate, :endDate, :lastLoginDate)
-                    returning {key}";
-
+                {                    
                     int rowsAffected = db.Execute(sqlQuery, user);
-                    result = parameters.Get<long>(key);
+                    //result = parameters.Get<long>("id");
+                    result = (long)db.ExecuteScalar(sqlQuery, user);
                     return GetUserById(result);
                 }
 
@@ -71,8 +66,8 @@ namespace WebApi.Models
             }
         }
 
+        // Пользователь по id
         public User GetUserById(long id)
-
         {
             DynamicParameters parameters = new DynamicParameters();
             parameters.Add("id", id);
@@ -84,19 +79,17 @@ namespace WebApi.Models
             }
         }
 
-        
-
-
+        // Список групп
         public List<Group> GetGroups()
         {
+            string sqlGroupList = "select * from public.\"group\";";
             using (IDbConnection db = new NpgsqlConnection(connectionString))
-            {
-                string sqlGroupList = "select * from public.\"group\";";
+            {                
                 return db.Query<Group>(sqlGroupList).ToList();
             }
         }
 
-
+        // Добавление группы
         public long CreateGroup(Group group)
         {
             try

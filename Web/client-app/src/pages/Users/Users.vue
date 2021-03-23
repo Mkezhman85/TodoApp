@@ -110,23 +110,23 @@
           <q-td key="login" :props="props">
             {{ props.row.login }}
           </q-td>
-          <q-td key="begin_date" :props="props">
-            {{ FormatDate(props.row.begin_date) }}
+          <q-td key="beginDate" :props="props">
+            {{ FormatDate(props.row.beginDate) }}
           </q-td>
-          <q-td key="end_date" :props="props">
-            {{ FormatDate(props.row.end_date) }}
+          <q-td key="endDate" :props="props">
+            {{ FormatDate(props.row.endDate) }}
           </q-td>
-          <q-td key="is_blocked" :props="props">
-            {{ getBlocked(props.row.is_blocked) }}
+          <q-td key="isBlocked" :props="props">
+            {{ getBlocked(props.row.isBlocked) }}
           </q-td>
-          <q-td key="required_password_change" :props="props">
-            {{ requiredPasswordChange(props.row.required_password_change) }}
+          <q-td key="requiredPasswordChange" :props="props">
+            {{ requiredPasswordChange(props.row.requiredPasswordChange) }}
           </q-td>
-          <q-td key="wrong_login_count" :props="props">
-            {{ props.row.wrong_login_count }}
+          <q-td key="wrongLoginCount" :props="props">
+            {{ props.row.wrongLoginCount }}
           </q-td>
-          <q-td key="last_login_date" :props="props">
-            {{ FormatDate(props.row.last_login_date) }}
+          <q-td key="lastLoginDate" :props="props">
+            {{ FormatDate(props.row.lastLoginDate) }}
           </q-td>
         </q-tr>
       </template>
@@ -169,45 +169,45 @@ const columns = [
     sortable: true,
   },
   {
-    name: "begin_date",
+    name: "beginDate",
     align: "center",
     label: "Дата начала доступа",
-    field: "begin_date",
+    field: "beginDate",
     sortable: true,
   },
   {
-    name: "end_date",
+    name: "endDate",
     align: "center",
     label: "Дата окончания доступа",
-    field: "end_date",
+    field: "endDate",
     sortable: true,
   },
   {
-    name: "is_blocked",
+    name: "isBlocked",
     align: "center",
     label: "Заблокирован",
-    field: "is_blocked",
+    field: "isBlocked",
     sortable: true,
   },
   {
-    name: "required_password_change",
+    name: "requiredPasswordChange",
     align: "center",
     label: "Требуется смена пароля",
-    field: "required_password_change",
+    field: "requiredPasswordChange",
     sortable: true,
   },
   {
-    name: "wrong_login_count",
+    name: "wrongLoginCount",
     align: "center",
     label: "Количество проваленных авторизаций",
-    field: "wrong_login_count",
+    field: "wrongLoginCount",
     sortable: true,
   },
   {
-    name: "last_login_date",
+    name: "lastLoginDate",
     align: "center",
     label: "Дата и время последней авторизации",
-    field: "last_login_date",
+    field: "lastLoginDate",
     sortable: true,
   },
 ];
@@ -260,20 +260,18 @@ export default class Users extends Vue {
   }
 
   async CreateNewUser(user: TUser) {
-    // debugger;
     console.log(user);
-
     const myUser: TUser = {
       login: user.login,
-      is_blocked: Boolean(user.is_blocked),
-      required_password_change: Boolean(user.required_password_change),
-      wrong_login_count: Number(user.wrong_login_count),
-      begin_date: new Date(user.begin_date),
-      end_date: new Date(user.end_date),
-      last_login_date: new Date(user.last_login_date),
+      isBlocked: Boolean(user.isBlocked),
+      requiredPasswordChange: Boolean(user.requiredPasswordChange),
+      wrongLoginCount: Number(user.wrongLoginCount),
+      beginDate: new Date(user.beginDate),
+      endDate: new Date(user.endDate),
+      lastLoginDate: new Date(user.lastLoginDate),
     };
 
-    axios.post("https://localhost:24636/api/user/CreateUser", myUser).then((res) => {
+    axios.post("https://localhost:24636/api/user/CreateNewUser", myUser).then((res) => {
       this.$q.notify({
         message: "Пользователь с логином " + myUser.login + " успешно добавлен. ",
         icon: "done",
