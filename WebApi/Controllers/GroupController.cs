@@ -23,7 +23,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Route("CreateGroup")]
-        public ActionResult CreateGroup([FromBody] Group group)
+        public ActionResult CreateGroup([FromBody] Groups group)
         {
             return Ok(_repository.CreateGroup(group));
         }

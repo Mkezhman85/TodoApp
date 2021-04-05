@@ -36,6 +36,13 @@ namespace WebApi.Controllers
             return Ok(_repository.CreateNewUser(user));
         }
 
+        [HttpGet]
+        [Route("GetUsersMulti")]
+        public ActionResult GetUsersMulti()
+        {
+            return Ok(_repository.GetUsersMulti());
+        }
+
 
 
 

@@ -26,7 +26,7 @@
               label="Отметка блокировки"
               v-model="user.isBlocked"
               :disable="readonlyParam"
-            />
+            />            
           </div>
           <div class="col">
             <q-input
@@ -91,6 +91,16 @@
               label="Требуется смена пароля"
               v-model="user.requiredPasswordChange"
               :disable="readonlyParam"
+            />
+            <q-input
+              label="Группа"
+              outlined
+              clearable
+              dense
+              class="q-pa-sm"
+              v-model="user.group.name"
+              :rules="[(val) => val !== null || 'Указание группы пользователя']"
+              :readonly="readonlyParam"
             />
           </div>
           <div class="col">
@@ -175,15 +185,17 @@ export default class UserEditor extends Vue {
     this.$emit("hide-userEditorOpened", this.userEditorOpened);
   }
 
-  @Prop(Object) user: {
-    // login: string;
-    // is_blocked: boolean;
-    // required_password_change: boolean;
-    // wrong_login_count: number;
-    // begin_date: Date;
-    // end_date: Date;
-    // last_login_date: Date;
-  };
+  @Prop(Object) user: Object 
+  // {
+  //   // login: string;
+  //   // is_blocked: boolean;
+  //   // required_password_change: boolean;
+  //   // wrong_login_count: number;
+  //   // begin_date: Date;
+  //   // end_date: Date;
+  //   // last_login_date: Date;
+  //   // group: Object
+  // };
 
   CreateNewUser(user: object) {
     this.$emit("create-newUser", this.user);
@@ -211,5 +223,7 @@ export default class UserEditor extends Vue {
   //   user = this.user;
   //   console.log(user);
   // }
+
+
 }
 </script>
