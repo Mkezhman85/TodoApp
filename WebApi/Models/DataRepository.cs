@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using Dapper;
-using Microsoft.AspNetCore.Mvc;
 using Npgsql;
 
 namespace WebApi.Models
@@ -20,13 +19,64 @@ namespace WebApi.Models
         // Список пользователей
         public List<User> GetUsers()
         {
-            string sqlUserList = $@"SELECT id, login, is_blocked, required_password_change, wrong_login_count, begin_date, end_date, last_login_date FROM users";
-            using (IDbConnection db = new NpgsqlConnection(connectionString))
+            try
             {
-                List<User> result = db.Query<User>(sqlUserList).ToList();
-                return result;
+
+                string sqlUserList = $@"SELECT id, login, is_blocked, required_password_change, wrong_login_count, begin_date, end_date, last_login_date FROM users";
+                using (IDbConnection db = new NpgsqlConnection(connectionString))
+                {
+
+                    List<User> users = db.Query<User>(sqlUserList).ToList();
+                    return users;
+                }
+            } catch(Exception e)
+            {
+                throw;
+            }            
+        }
+
+        // Список пользователей
+        public List<User> GetUsersMulti()
+        {
+            try
+            {
+                //string sql = $@"select * from users as U join groups as G on U.group_id = G.id";
+
+                string sqlQuery = $@"
+                    select users.id, users.login, users.is_blocked, users.required_password_change, 
+                    users.wrong_login_count, users.begin_date, users.end_date, users.last_login_date,
+                    groups.id, groups.name, groups.parent_id, groups.description
+                    FROM users
+                    join groups on users.group_id = groups.id
+                    order by groups.name DESC;
+                ";
+
+                using (IDbConnection db = new NpgsqlConnection(connectionString))
+                {
+
+                    var users = db.Query<User, Groups, User>(
+                        sqlQuery,
+                        (user, group) =>
+                        {
+                            user.group = group;
+                            return user;
+                        },
+                        splitOn: "Id"
+                    )
+                        //.Distinct()
+                        .ToList();
+
+                    //List<User> users = db.Query<User>(sqlUsersWithGroups).ToList();
+                    return users;
+                }
+            }
+            catch (Exception e)
+            {
+                throw;
             }
         }
+
+
 
         // Добавление пользователя
         public User CreateNewUser(User user)
@@ -53,7 +103,7 @@ namespace WebApi.Models
 
                 using (IDbConnection db = new NpgsqlConnection(connectionString))
                 {                    
-                    int rowsAffected = db.Execute(sqlQuery, user);
+                    //int rowsAffected = db.Execute(sqlQuery, user);
                     //result = parameters.Get<long>("id");
                     result = (long)db.ExecuteScalar(sqlQuery, user);
                     return GetUserById(result);
@@ -80,23 +130,23 @@ namespace WebApi.Models
         }
 
         // Список групп
-        public List<Group> GetGroups()
+        public List<Groups> GetGroups()
         {
-            string sqlGroupList = "select * from public.\"group\";";
+            string sqlGroupList = "select * from public.\"groups\";";
             using (IDbConnection db = new NpgsqlConnection(connectionString))
             {                
-                return db.Query<Group>(sqlGroupList).ToList();
+                return db.Query<Groups>(sqlGroupList).ToList();
             }
         }
 
         // Добавление группы
-        public long CreateGroup(Group group)
+        public long CreateGroup(Groups group)
         {
             try
             {
                 using (IDbConnection db = new NpgsqlConnection(connectionString))
                 {
-                    string sqlQuery = "Insert into public.\"group\"(name, description, parent_id)" +
+                    string sqlQuery = "Insert into public.\"groups\"(name, description, parent_id)" +
                         "Values(@Name, @Description, @ParentId)";
 
                     int rowsAffected = db.Execute(sqlQuery, group);
@@ -117,14 +167,14 @@ namespace WebApi.Models
             throw new NotImplementedException();
         }
 
-        public Group GetGroupById(int id)
+        public Groups GetGroupById(int id)
         {
             throw new NotImplementedException();
         }
 
 
 
-        public void Update(Group group)
+        public void Update(Groups group)
         {
             throw new NotImplementedException();
         }

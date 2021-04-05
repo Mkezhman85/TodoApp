@@ -18,5 +18,9 @@ namespace WebApi.Models
         public int WrongLoginCount { get; set; }
         public DateTime LastLoginDate { get; set; }
 
+        //public long GroupId { get; set; }
+        public Groups group { get; set; }
+
+
     }
 }

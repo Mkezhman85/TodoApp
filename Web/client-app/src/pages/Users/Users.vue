@@ -104,6 +104,9 @@
               </q-tooltip>
             </q-btn>
           </q-td>
+          <q-td key="group" :props="props">
+            {{ props.row.group.name }}
+          </q-td>
           <q-td key="id" :props="props">
             {{ props.row.id }}
           </q-td>
@@ -154,6 +157,13 @@ import { Dialog } from "quasar";
 import { Notify } from "quasar";
 
 const columns = [
+  {
+    name: "group",
+    align: "center",
+    label: "Группа",
+    field: "group",
+    sortable: true,
+  },
   {
     name: "id",
     align: "center",
@@ -240,8 +250,17 @@ export default class Users extends Vue {
     }
   }
 
-  async GetUsers() {
-    axios.get("https://localhost:24636/api/user/GetUsers").then((res) => {
+  // async GetUsers() {
+  //   axios.get("https://localhost:24636/api/user/GetUsers").then((res) => {
+  //     // console.log(typeof res.data.data.subjectTableViewModelList);
+  //     this.users = res.data;
+  //     console.log(this.users);
+  //     return this.users;
+  //   });
+  // }
+
+  async GetUsersMulti() {
+    axios.get("https://localhost:24636/api/user/GetUsersMulti").then((res) => {
       // console.log(typeof res.data.data.subjectTableViewModelList);
       this.users = res.data;
       console.log(this.users);
@@ -269,6 +288,7 @@ export default class Users extends Vue {
       beginDate: new Date(user.beginDate),
       endDate: new Date(user.endDate),
       lastLoginDate: new Date(user.lastLoginDate),
+      group: Object(user.group)
     };
 
     axios.post("https://localhost:24636/api/user/CreateNewUser", myUser).then((res) => {
@@ -280,7 +300,7 @@ export default class Users extends Vue {
       });
 
       this.hideUserEditor();
-      this.GetUsers();
+      this.GetUsersMulti();
     });
   }
 
@@ -360,7 +380,8 @@ export default class Users extends Vue {
   }
 
   mounted() {
-    this.GetUsers();
+    // this.GetUsers();
+    this.GetUsersMulti();
   }
 }
 </script>

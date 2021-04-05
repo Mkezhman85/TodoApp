@@ -12,15 +12,17 @@ namespace WebApi.Models
 
     public interface IDataRepository
     {
-        long CreateGroup(Group group);
+        long CreateGroup(Groups group);
         void Delete(int id);
-        Group GetGroupById(int id);
-        List<Group> GetGroups();
-        void Update(Group group);
+        Groups GetGroupById(int id);
+        List<Groups> GetGroups();
+        void Update(Groups group);
 
         List<User> GetUsers();
         User CreateNewUser(User user);
         User GetUserById(long id);
+
+        List<User> GetUsersMulti();
 
     }
 }
